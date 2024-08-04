@@ -148,7 +148,7 @@ public class Program
                         _sellerService.GetSelledProductByDate(existSeller.Id);
                         break;
                     case SellerOperations.RemoveProduct:
-                        _sellerService.RemoveProduct();
+                        _sellerService.RemoveProduct(existSeller.Id);
                         break;
                     case SellerOperations.SearchProducts:
                         _sellerService.SearchProducts();
@@ -242,6 +242,7 @@ public class Program
         Console.WriteLine("6   Get sold products by date");
         Console.WriteLine("7   Remove product");
         Console.WriteLine("8   Search product");
+        Console.WriteLine("9   Get all products");
     }
     static void ShowCustommerMenu()
     {
@@ -251,5 +252,6 @@ public class Program
         Console.WriteLine("3   FilterProducts");
         Console.WriteLine("4   GetBoughtProducts");
         Console.WriteLine("5   GetProductsByDate");
+        Console.WriteLine("6   Get all products");
     }
 }

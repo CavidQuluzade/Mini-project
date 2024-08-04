@@ -4,7 +4,7 @@ public interface ISellerService
 {
     public void AddProduct(int id);
     public void ChangeProductCount();
-    public void RemoveProduct();
+    public void RemoveProduct(int id);
     public void GetSelledProduct(int id);
     public void GetSelledProductByDate(int id);
     public void SearchProducts();

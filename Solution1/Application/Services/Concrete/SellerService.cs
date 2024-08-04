@@ -48,7 +48,11 @@ public class SellerService : ISellerService
             goto InputPrice;
         }
         product.Price = productPrice;
-    CategoryInput: _unitofwork.Categories.GetAllCategories();
+    CategoryInput: var categories = _unitofwork.Categories.GetAll();
+        foreach (var category in categories)
+        {
+            Console.WriteLine($"Id: {category.Id} | Name: {category.Name}");
+        }
         BasicMessages.InputMessage("category id");
         string categoryInput = Console.ReadLine();
         isSucceded = int.TryParse(categoryInput, out int categoryId);
@@ -61,10 +65,16 @@ public class SellerService : ISellerService
         product.SellerId = id;
         _unitofwork.Products.Add(product);
         _unitofwork.Commit(productName, "added");
+
     }
+
     public void ChangeProductCount()
     {
-        ProductInput: _unitofwork.Products.GetAllProducts();
+    ProductInput: var products = _unitofwork.Products.GetAllProducts();
+        foreach( var product in products)
+        {
+            Console.WriteLine($"Id: {product.Id} | Name: {product.Name} | Price: {product.Price} | Count: {product.Count} | Category: {product.Category.Name}");
+        }
         BasicMessages.InputMessage("product id");
         string productIdInput = Console.ReadLine();
         bool isSucceded = int.TryParse(productIdInput, out int productId);
@@ -79,10 +89,10 @@ public class SellerService : ISellerService
             ErrorMessages.NotFoundMessage(productIdInput);
             goto ProductInput;
         }
-        CountINput: BasicMessages.InputMessage("new count");
+    CountINput: BasicMessages.InputMessage("new count");
         string inputCount = Console.ReadLine();
         isSucceded = int.TryParse(inputCount, out int Count);
-        if(!isSucceded || Count <= existProduct.Count || string.IsNullOrWhiteSpace(inputCount))
+        if (!isSucceded || Count <= existProduct.Count || string.IsNullOrWhiteSpace(inputCount))
         {
             ErrorMessages.InvalidInputMessage(inputCount);
             goto CountINput;
@@ -94,7 +104,7 @@ public class SellerService : ISellerService
 
     public void GetIncome(int id)
     {
-      decimal total =  _unitofwork.Sellers.GetIncome(id);
+        decimal total = _unitofwork.Sellers.GetIncome(id);
         Console.WriteLine($"Your income is: {total}");
     }
 
@@ -106,13 +116,21 @@ public class SellerService : ISellerService
         }
         else
         {
-            _unitofwork.Orders.GetOrdersBySeller(id);
+            foreach (var order in _unitofwork.Orders.GetOrdersBySeller(id))
+            {
+                Console.WriteLine($"Id: {order.Id} | Total: {order.TotalAmount} | Seller: {order.Sellers.Surname} {order.Sellers.Name} | Customer: {order.Customers.Surname} {order.Customers.Name} | Product: {order.Products.Name} - {order.Products.Price} | Date: {order.CreatedDate}");
+            }
         }
     }
+
     public void GetAllProducts(int id)
     {
-        _unitofwork.Products.GetAllProductsBySellerId(id);
+        foreach(var product in _unitofwork.Products.GetAllProductsBySellerId(id))
+        {
+            Console.WriteLine($"Id: {product.Id} | Name: {product.Name} | Price: {product.Price} | Count: {product.Count} | Category: {product.Category.Name}");
+        }
     }
+
     public void GetSelledProductByDate(int id)
     {
     InputDate: BasicMessages.InoutDateMessage();
@@ -123,12 +141,15 @@ public class SellerService : ISellerService
             ErrorMessages.InvalidInputMessage(input);
             goto InputDate;
         }
-        _unitofwork.Orders.GetOrdersByDateWithSellerId(date, id);
+        foreach(var order in _unitofwork.Orders.GetOrdersByDateWithSellerId(date, id))
+        {
+            Console.WriteLine($"Id: {order.Id} | Total: {order.TotalAmount} | Seller: {order.Sellers.Surname} {order.Sellers.Name} | Customer: {order.Customers.Surname} {order.Customers.Name} | Product: {order.Products.Name} - {order.Products.Price} | Date: {order.CreatedDate}");
+        }
     }
 
-    public void RemoveProduct()
+    public void RemoveProduct(int id)
     {
-    ProductInput: _unitofwork.Products.GetAllProducts();
+    ProductInput: GetAllProducts(id);
         BasicMessages.InputMessage("product id");
         string productIdInput = Console.ReadLine();
         bool isSucceded = int.TryParse(productIdInput, out int productId);
@@ -155,3 +176,5 @@ public class SellerService : ISellerService
         _unitofwork.Products.SearchProduct(inputSearch);
     }
 }
+
+

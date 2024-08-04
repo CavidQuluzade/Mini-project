@@ -12,37 +12,28 @@ public class OrderRepository : BaseRepository<Order>, IOrderRepository
     {
         _context = context;
     }
-    public void GetOrdersDesc()
+    public List<Order> GetOrdersDesc()
     {
-        foreach (var order in _context.Orders.Include(x => x.Sellers).Include(x => x.Customers).Include(x => x.Products).OrderByDescending(x => x.CreatedDate).ThenByDescending(x => x.UpdatedDate))
-        {
-            Console.WriteLine($"Id: {order.Id} | Total: {order.TotalAmount} | Seller: {order.Sellers.Surname} {order.Sellers.Name} | Customer: {order.Customers.Surname} {order.Customers.Name} | Product: {order.Products.Name} - {order.Products.Price} | Date: {order.CreatedDate}");
-        }
+        return _context.Orders.Include(x => x.Sellers).Include(x => x.Customers).Include(x => x.Products).OrderByDescending(x => x.CreatedDate).ThenByDescending(x => x.UpdatedDate).ToList();
     }
-    public void GetOrdersByCustomer(int id)
+    public List<Order> GetOrdersByCustomer(int id)
     {
-        foreach (var order in _context.Orders.Include(x => x.Sellers).Include(x => x.Customers).Where(x => x.Customers.Id == id).Include(x => x.Products).OrderByDescending(x => x.CreatedDate).ThenByDescending(x => x.UpdatedDate))
-        {
-            Console.WriteLine($"Id: {order.Id} | Total: {order.TotalAmount} | Seller: {order.Sellers.Surname} {order.Sellers.Name} | Customer: {order.Customers.Surname} {order.Customers.Name} | Product: {order.Products.Name} - {order.Products.Price} | Date: {order.CreatedDate}");
-        }
+        return _context.Orders.Include(x => x.Sellers).Include(x => x.Customers).Where(x => x.Customers.Id == id).Include(x => x.Products).OrderByDescending(x => x.CreatedDate).ThenByDescending(x => x.UpdatedDate).ToList();
+        
     }
-    public void GetOrdersByDate(DateTime date)
+    public List<Order> GetOrdersByDate(DateTime date)
     {
-        foreach (var order in _context.Orders.Include(x => x.Sellers).Include(x => x.Customers).Include(x => x.Products).OrderByDescending(x => x.CreatedDate).ThenByDescending(x => x.UpdatedDate).Where(x => x.CreatedDate.Date == date.Date || x.UpdatedDate.Date == date.Date))
-        {
-            Console.WriteLine($"Id: {order.Id} | Total: {order.TotalAmount} | Seller: {order.Sellers.Surname} {order.Sellers.Name} | Customer: {order.Customers.Surname} {order.Customers.Name} | Product: {order.Products.Name} - {order.Products.Price} | Date: {order.CreatedDate}");
-        }
+        return _context.Orders.Include(x => x.Sellers).Include(x => x.Customers).Include(x => x.Products).OrderByDescending(x => x.CreatedDate).ThenByDescending(x => x.UpdatedDate).Where(x => x.CreatedDate.Date == date.Date || x.UpdatedDate.Date == date.Date).ToList();        
     }
     public int GetOrdersByDateCount(DateTime date)
     {
         return _context.Orders.Where(x => x.CreatedDate.Date == date.Date || x.UpdatedDate.Date == date.Date).Count();
     }
-    public void GetOrdersBySeller(int id)
+    public List<Order> GetOrdersBySeller(int id)
     {
-        foreach (var order in _context.Orders.Include(x => x.Sellers).Include(x => x.Customers).Where(x => x.Sellers.Id == id).Include(x => x.Products).OrderByDescending(x => x.CreatedDate).ThenByDescending(x => x.UpdatedDate))
-        {
-            Console.WriteLine($"Id: {order.Id} | Total: {order.TotalAmount} | Seller: {order.Sellers.Surname} {order.Sellers.Name} | Customer: {order.Customers.Surname} {order.Customers.Name} | Product: {order.Products.Name} - {order.Products.Price} | Date: {order.CreatedDate}");
-        }
+        return _context.Orders.Include(x => x.Sellers).Include(x => x.Customers).Where(x => x.Sellers.Id == id).Include(x => x.Products).OrderByDescending(x => x.CreatedDate).ThenByDescending(x => x.UpdatedDate).ToList();
+        
+       
     }
     public int GetOrdersCountByCustomer(int id)
     {
@@ -52,26 +43,17 @@ public class OrderRepository : BaseRepository<Order>, IOrderRepository
     {
         return _context.Orders.Count(x => x.SellerId == id);
     }
-    public void GetOrder(int id)
+
+    public List<Order> GetOrdersByDateWithCustomerId(DateTime date, int id)
     {
-        foreach (var order in _context.Orders.Where(x => x.SellerId == id).Include(x => x.Sellers).Include(x => x.Products).Include(x => x.Customers))
-        {
-            Console.WriteLine($"Id: {order.Id} | Total: {order.TotalAmount} | Seller: {order.Sellers.Surname} {order.Sellers.Name} | Customer: {order.Customers.Surname} {order.Customers.Name} | Product: {order.Products.Name} - {order.Products.Price} | Date: {order.CreatedDate}");
-        }
-    }
-    public void GetOrdersByDateWithCustomerId(DateTime date, int id)
-    {
-        foreach (var order in _context.Orders.Include(x => x.Sellers).Include(x => x.Customers).Include(x => x.Products).OrderByDescending(x => x.CreatedDate).ThenByDescending(x => x.UpdatedDate).Where(x => x.CreatedDate.Date == date.Date || x.UpdatedDate.Date == date.Date && x.CustomerId == id))
-        {
-            Console.WriteLine($"Id: {order.Id} | Total: {order.TotalAmount} | Seller: {order.Sellers.Surname} {order.Sellers.Name} | Customer: {order.Customers.Surname} {order.Customers.Name} | Product: {order.Products.Name} - {order.Products.Price} | Date: {order.CreatedDate}");
-        }
+        return _context.Orders.Include(x => x.Sellers).Include(x => x.Customers).Include(x => x.Products).OrderByDescending(x => x.CreatedDate).ThenByDescending(x => x.UpdatedDate).Where(x => x.CreatedDate.Date == date.Date || x.UpdatedDate.Date == date.Date && x.CustomerId == id).ToList();
+
+        
     }
 
-    public void GetOrdersByDateWithSellerId(DateTime date, int id)
+    public List<Order> GetOrdersByDateWithSellerId(DateTime date, int id)
     {
-        foreach (var order in _context.Orders.Include(x => x.Sellers).Include(x => x.Customers).Include(x => x.Products).OrderByDescending(x => x.CreatedDate).ThenByDescending(x => x.UpdatedDate).Where(x => x.CreatedDate.Date == date.Date || x.UpdatedDate.Date == date.Date && x.SellerId == id))
-        {
-            Console.WriteLine($"Id: {order.Id} | Total: {order.TotalAmount} | Seller: {order.Sellers.Surname} {order.Sellers.Name} | Customer: {order.Customers.Surname} {order.Customers.Name} | Product: {order.Products.Name} - {order.Products.Price} | Date: {order.CreatedDate}");
-        }
+        return _context.Orders.Include(x => x.Sellers).Include(x => x.Customers).Include(x => x.Products).OrderByDescending(x => x.CreatedDate).ThenByDescending(x => x.UpdatedDate).Where(x => x.CreatedDate.Date == date.Date || x.UpdatedDate.Date == date.Date && x.SellerId == id).ToList();
+        
     }
 }

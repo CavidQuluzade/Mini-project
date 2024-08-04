@@ -11,13 +11,6 @@ public class CategoryRepository : BaseRepository<Category>, ICategoryRepository
     {
         _context = context;
     }
-    public void GetAllCategories()
-    {
-        foreach (var category in _context.Categories)
-        {
-            Console.WriteLine($"Id: {category.Id} | Name: {category.Name}");
-        }
-    }
 
     public Category GetCategoryByName(string name)
     {

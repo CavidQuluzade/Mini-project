@@ -17,35 +17,21 @@ public class ProductRepository : BaseRepository<Product>, IProductRepository
     {
         return _context.Products.FirstOrDefault(x => x.Id == id);
     }
-    public void GetAllProducts()
+    public List<Product> GetAllProducts()
     {
-        foreach (var product in _context.Products.Include(x => x.Category))
-        {
-            Console.WriteLine($"Id: {product.Id} | Name: {product.Name} | Price: {product.Price} | Count: {product.Count} | Category: {product.Category.Name}");
-        }
+        return _context.Products.Include(x => x.Category).ToList();
+        
     }
-    public void SearchProduct(string input)
+    public List<Product> SearchProduct(string input)
     {
         var products = _context.Products.Include(x => x.Category).Where(x => x.Name.Contains(input)).ToList();
 
-        if (!products.Any())
-        {
-            ErrorMessages.NotFoundMessage("product");
-        }
-        else
-        {
-            foreach (var product in products)
-            {
-                Console.WriteLine($"Id: {product.Id} | Name: {product.Name} | Price: {product.Price} | Count: {product.Count} | Category: {product.Category.Name}");
-            }
-        }
+        return products;
     }
-    public void GetAllProductsBySellerId(int sellerId)
+    public List<Product> GetAllProductsBySellerId(int sellerId)
     {
-        foreach (var product in _context.Products.Include(x => x.Category).Include(x => x.Seller).Where(x => x.SellerId == sellerId))
-        {
-            Console.WriteLine($"Id: {product.Id} | Name: {product.Name} | Price: {product.Price} | Count: {product.Count} | Category: {product.Category.Name}");
-        }
+        return _context.Products.Include(x => x.Category).Include(x => x.Seller).Where(x => x.SellerId == sellerId).ToList();
+        
     }
 
 }

@@ -27,19 +27,11 @@ public class SellerRepository : BaseRepository<Seller>, ISellerRepository
         return _context.Sellers.FirstOrDefault(x => x.Email == email && x.Password == password);
     }
 
-
-
     public Seller GetSellerById(int id)
     {
         return _context.Sellers.FirstOrDefault(x => x.Id == id);
     }
-    public void GetAllSellers()
-    {
-        foreach (var seller in _context.Sellers)
-        {
-            Console.WriteLine($"Id: {seller.Id} | Surname: {seller.Surname} | Name: {seller.Name} | Email: {seller.Email} | PIN: {seller.Pin} | Seria: {seller.SeriaNumber} | Phone: {seller.Phone} | CreatedDate: {seller.CreatedDate} | EditDate: {seller.UpdatedDate}");
-        }
-    }
+
     public int GetSellersCount()
     {
         return _context.Sellers.Count();

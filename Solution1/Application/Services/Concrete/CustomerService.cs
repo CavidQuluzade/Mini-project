@@ -2,6 +2,7 @@
 using Core.Entities;
 using Core.Messages;
 using Data.UnitOfWork.Concrete;
+using Microsoft.EntityFrameworkCore;
 using System.Globalization;
 
 namespace Application.Services.Concrete;
@@ -16,7 +17,7 @@ public class CustomerService : ICustomerService
     public void BuyProduct(int id)
     {
         Order order = new Order();
-    InputProduct: _unitofwork.Products.GetAllProducts();
+    InputProduct: GetAllProducts();
         BasicMessages.WantToUseMessage("product");
         string input = Console.ReadLine();
         bool isSucceded = char.TryParse(input, out char answer);
@@ -25,7 +26,7 @@ public class CustomerService : ICustomerService
             ErrorMessages.InvalidInputMessage(input);
             goto InputProduct;
         }
-        if(answer != 'y' && answer != 'n')
+        if (answer != 'y' && answer != 'n')
         {
             ErrorMessages.InvalidInputMessage(input);
             goto InputProduct;
@@ -36,7 +37,8 @@ public class CustomerService : ICustomerService
         }
         else if (answer == 'n')
         {
-            _unitofwork.Products.GetAllProducts();
+            GetAllProducts();
+
         }
         string InputId = Console.ReadLine();
         isSucceded = int.TryParse(InputId, out int productId);
@@ -51,7 +53,7 @@ public class CustomerService : ICustomerService
             ErrorMessages.NotFoundMessage("product");
             goto InputProduct;
         }
-        InputAnswer: BasicMessages.WantToBuyMessage("product");
+    InputAnswer: BasicMessages.WantToBuyMessage("product");
         input = Console.ReadLine();
         isSucceded = char.TryParse(input, out answer);
         if (!isSucceded || string.IsNullOrWhiteSpace(input))
@@ -95,8 +97,20 @@ public class CustomerService : ICustomerService
     {
         BasicMessages.InputMessage("something to search");
         string inputSearch = Console.ReadLine();
-        _unitofwork.Products.SearchProduct(inputSearch);
+        var products = _unitofwork.Products.SearchProduct(inputSearch);
+        if (products == null)
+        {
+            ErrorMessages.NotFoundMessage("product");
+            return;
+        }
+
+        foreach (var product in products)
+        {
+            Console.WriteLine($"Id: {product.Id} | Name: {product.Name} | Price: {product.Price} | Count: {product.Count} | Category: {product.Category.Name}");
+        }
     }
+
+
 
     public void GetBoughtProducts(int id)
     {
@@ -106,7 +120,10 @@ public class CustomerService : ICustomerService
         }
         else
         {
-            _unitofwork.Orders.GetOrdersByCustomer(id);
+            foreach (var order in _unitofwork.Orders.GetOrdersByCustomer(id))
+            {
+                Console.WriteLine($"Id: {order.Id} | Total: {order.TotalAmount} | Seller: {order.Sellers.Surname} {order.Sellers.Name} | Customer: {order.Customers.Surname} {order.Customers.Name} | Product: {order.Products.Name} - {order.Products.Price} | Date: {order.CreatedDate}");
+            }
         }
     }
 
@@ -120,10 +137,19 @@ public class CustomerService : ICustomerService
             ErrorMessages.InvalidInputMessage(input);
             goto InputDate;
         }
-        _unitofwork.Orders.GetOrdersByDateWithCustomerId(date, id);
+        var orders = _unitofwork.Orders.GetOrdersByDateWithCustomerId(date, id);
+        foreach (var order in orders)
+        {
+            Console.WriteLine($"Id: {order.Id} | Total: {order.TotalAmount} | Seller: {order.Sellers.Surname} {order.Sellers.Name} | Customer: {order.Customers.Surname} {order.Customers.Name} | Product: {order.Products.Name} - {order.Products.Price} | Date: {order.CreatedDate}");
+        }
     }
+
     public void GetAllProducts()
     {
-        _unitofwork.Products.GetAllProducts();
+        foreach(var product in _unitofwork.Products.GetAllProducts())
+        {
+            Console.WriteLine($"Id: {product.Id} | Name: {product.Name} | Price: {product.Price} | Count: {product.Count} | Category: {product.Category.Name}");
+        }
     }
 }
+    

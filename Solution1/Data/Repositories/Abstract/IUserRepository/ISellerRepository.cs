@@ -6,7 +6,6 @@ namespace Data.Repositories.Abstract;
 public interface ISellerRepository : IBaseRepository<Seller>
 {
     decimal GetIncome(int id);
-    void GetAllSellers();
     Seller GetSellerByEmail(string email, string password);
     Seller GetSellerById(int id);
     int GetSellersCount();

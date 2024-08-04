@@ -4,6 +4,7 @@ using Core.Messages;
 using Data.Repositories.Concrete;
 using Data.UnitOfWork.Concrete;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using System.Globalization;
 
 namespace Application.Services.Concrete;
@@ -19,17 +20,29 @@ public class AdminService : IAdminService
 
     public void GetAllCustomers()
     {
-        _unitofwork.Customers.GetAllCustomers();
+        List<Customer> customers = _unitofwork.Customers.GetAll();
+        foreach (var customer in customers)
+        {
+            Console.WriteLine($"Id: {customer.Id} | Name: {customer.Name} | Surname: {customer.Surname} | Email {customer.Email} | PIN {customer.Pin} | Seria {customer.SeriaNumber} | Creation Date {customer.CreatedDate}");
+        }
     }
 
     public void GetAllSellers()
     {
-        _unitofwork.Sellers.GetAllSellers();
+        List<Seller> sellers = _unitofwork.Sellers.GetAll();
+        foreach(var seller in sellers)
+        {
+            Console.WriteLine($"Id: {seller.Id} | Name: {seller.Name} | Surname: {seller.Surname} | Email {seller.Email} | PIN {seller.Pin} | Seria {seller.SeriaNumber} | Creation Date {seller.CreatedDate}");
+        }
     }
 
     public void GetOrders()
     {
-        _unitofwork.Orders.GetOrdersDesc();
+        
+        foreach (var order in _unitofwork.Orders.GetOrdersDesc())
+        {
+            Console.WriteLine($"Id: {order.Id} | Total: {order.TotalAmount} | Seller: {order.Sellers.Surname} {order.Sellers.Name} | Customer: {order.Customers.Surname} {order.Customers.Name} | Product: {order.Products.Name} - {order.Products.Price} | Date: {order.CreatedDate}");
+        }
     }
 
     public void GetOrdersByCustomer()
@@ -40,7 +53,7 @@ public class AdminService : IAdminService
             ErrorMessages.CountIsZeroMessage("customer");
             return;
         }
-    Input: _unitofwork.Customers.GetAllCustomers();
+    Input: GetAllCustomers();
         BasicMessages.InputMessage("customer id");
         string input = Console.ReadLine();
         bool isSucceded = int.TryParse(input, out int id);
@@ -55,7 +68,10 @@ public class AdminService : IAdminService
             ErrorMessages.NotFoundMessage("customer");
             goto Input;
         }
-        _unitofwork.Orders.GetOrdersByCustomer(id);
+        foreach (var order in _unitofwork.Orders.GetOrdersByCustomer(id))
+        {
+            Console.WriteLine($"Id: {order.Id} | Total: {order.TotalAmount} | Seller: {order.Sellers.Surname} {order.Sellers.Name} | Customer: {order.Customers.Surname} {order.Customers.Name} | Product: {order.Products.Name} - {order.Products.Price} | Date: {order.CreatedDate}");
+        }
     }
 
     public void GetOrdersByDate()
@@ -74,7 +90,10 @@ public class AdminService : IAdminService
             ErrorMessages.CountIsZeroMessage("order");
             return;
         }
-        _unitofwork.Orders.GetOrdersByDate(date);
+        foreach(var order in _unitofwork.Orders.GetOrdersByDate(date))
+        {
+            Console.WriteLine($"Id: {order.Id} | Total: {order.TotalAmount} | Seller: {order.Sellers.Surname} {order.Sellers.Name} | Customer: {order.Customers.Surname} {order.Customers.Name} | Product: {order.Products.Name} - {order.Products.Price} | Date: {order.CreatedDate}");
+        }
     }
 
     public void GetOrdersBySeller()
@@ -85,7 +104,7 @@ public class AdminService : IAdminService
             ErrorMessages.CountIsZeroMessage("seller");
             return;
         }
-    Input: _unitofwork.Sellers.GetAllSellers();
+    Input: GetAllSellers();
         BasicMessages.InputMessage("seller id");
         string input = Console.ReadLine();
         bool isSucceded = int.TryParse(input, out int id);
@@ -100,8 +119,10 @@ public class AdminService : IAdminService
             ErrorMessages.NotFoundMessage("seller");
             goto Input;
         }
-        _unitofwork.Orders.GetOrdersBySeller(id);
-
+        foreach(var order in _unitofwork.Orders.GetOrdersBySeller(id))
+        {
+            Console.WriteLine($"Id: {order.Id} | Total: {order.TotalAmount} | Seller: {order.Sellers.Surname} {order.Sellers.Name} | Customer: {order.Customers.Surname} {order.Customers.Name} | Product: {order.Products.Name} - {order.Products.Price} | Date: {order.CreatedDate}");
+        }
     }
 
     public void AddCategory()
@@ -176,7 +197,7 @@ public class AdminService : IAdminService
         customer.Password = passwordHasher.HashPassword(customer, customerPassword);
     InputPhone: BasicMessages.InputMessage("phone number (example: +994000000000)");
         string customerPhone = Console.ReadLine();
-        if (string.IsNullOrWhiteSpace(customerPhone) || customerPhone.Length != 13 || !customerPhone.Any(char.IsDigit) || customerPhone.Contains("+994"))
+        if (string.IsNullOrWhiteSpace(customerPhone) || customerPhone.Length != 13 || !customerPhone.Any(char.IsDigit) || !customerPhone.Contains("+994"))
         {
             ErrorMessages.InvalidInputMessage(customerPhone);
             goto InputPhone;
@@ -216,6 +237,7 @@ public class AdminService : IAdminService
         _unitofwork.Commit(customerName, "added");
 
     }
+
     public void AddSeller()
     {
         Seller seller = new Seller();
@@ -265,7 +287,7 @@ public class AdminService : IAdminService
         }
         PasswordHasher<Seller> passwordHasher = new PasswordHasher<Seller>();
         seller.Password = passwordHasher.HashPassword(seller, sellerPassword);
-    InputPhone: BasicMessages.InputMessage("phone number (example: +994000000000");
+    InputPhone: BasicMessages.InputMessage("phone number (example: +994000000000)");
         string sellerPhone = Console.ReadLine();
         if (string.IsNullOrWhiteSpace(sellerPhone) || sellerPhone.Length != 13 || !sellerPhone.Any(char.IsDigit) || !sellerPhone.Contains("+994"))
         {

@@ -1,6 +1,7 @@
 ﻿using Core.Entities;
 using Data.Repositories.Abstract;
 using Data.Repositories.BaseRepository;
+using Microsoft.EntityFrameworkCore;
 
 namespace Data.Repositories.Concrete;
 
@@ -16,13 +17,7 @@ public class CustomerRepository : BaseRepository<Customer>, ICustomerRepository
         return _context.Customers.FirstOrDefault(x => x.Id == id);
 
     }
-    public void GetAllCustomers()
-    {
-        foreach (var customer in _context.Customers)
-        {
-            Console.WriteLine($"Id: {customer.Id} | Surname: {customer.Surname} | Name: {customer.Name} | Email: {customer.Email} | PIN: {customer.Pin} | Seria: {customer.SeriaNumber} | Phone: {customer.Phone} | CreatedDate: {customer.CreatedDate} | EditDate: {customer.UpdatedDate}");
-        }
-    }
+
     public int GetCustomersCount()
     {
         return _context.Customers.Count();
